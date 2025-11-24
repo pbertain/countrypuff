@@ -85,6 +85,8 @@
       become_method: sudo
       vars:
         ansible_ssh_pipelining: true
+      environment:
+        GIT_SSL_NO_VERIFY: "true"
       notify: restart application
 
     - name: Create Python virtual environment
