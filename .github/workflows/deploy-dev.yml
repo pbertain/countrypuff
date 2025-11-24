@@ -45,11 +45,10 @@ jobs:
 
     - name: Run Ansible deployment
       run: |
-        cd ansible
         ansible-playbook \
-          -i inventories/hosts.yml \
+          -i ansible/inventories/hosts.yml \
           -l development \
-          playbooks/deploy.yml \
+          ansible/playbooks/deploy.yml \
           --private-key ~/.ssh/id_ed25519 \
           --diff \
           -v
