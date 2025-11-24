@@ -1,0 +1,89 @@
+name: Deploy to Development
+
+on:
+  push:
+    branches: [ dev ]
+  workflow_dispatch:
+    inputs:
+      force_deploy:
+        description: 'Force deployment even if no changes'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  deploy-dev:
+    name: Deploy to Development Environment
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Ansible
+      run: |
+        python -m pip install --upgrade pip
+        pip install ansible
+
+    - name: Setup SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan -H host78.nird.club >> ~/.ssh/known_hosts
+
+    - name: Test SSH connection
+      run: |
+        ssh -i ~/.ssh/id_ed25519 -o ConnectTimeout=10 root@host78.nird.club "echo 'SSH connection successful'"
+
+    - name: Run Ansible deployment
+      run: |
+        cd ansible
+        ansible-playbook \
+          -i inventories/hosts.yml \
+          -l development \
+          playbooks/deploy.yml \
+          --private-key ~/.ssh/id_ed25519 \
+          --diff \
+          -v
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: false
+
+    - name: Verify deployment
+      run: |
+        echo "Waiting for application to start..."
+        sleep 30
+        
+        # Test API endpoint
+        response=$(curl -s -o /dev/null -w "%{http_code}" http://host78.nird.club:63081/api || echo "000")
+        if [ "$response" = "200" ]; then
+          echo "✅ Development deployment successful!"
+          echo "🌍 Application is available at: http://host78.nird.club:63081"
+        else
+          echo "❌ Deployment verification failed. HTTP status: $response"
+          exit 1
+        fi
+
+    - name: Post deployment info
+      if: success()
+      run: |
+        echo "🚀 Development Deployment Complete!"
+        echo "📍 URL: http://host78.nird.club:63081"
+        echo "🔗 API: http://host78.nird.club:63081/api"
+        echo "📋 Docs: http://host78.nird.club:63081/docs"
+        echo "🔍 Test: curl http://host78.nird.club:63081/api/countries/US"
+
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "❌ Development deployment failed!"
+        echo "Check the logs above for details."
+        echo "You can also check the service status with:"
+        echo "ssh -i ~/.ssh/id_ed25519 root@host78.nird.club 'systemctl status countrypuff-dev'"
