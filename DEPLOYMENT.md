@@ -274,10 +274,10 @@ If a deployment causes issues:
 
 2. **Manual Rollback**: SSH into server and restart previous version
    ```bash
-   ssh -i ~/.ssh/your-key root@host74.nird.club
+   ssh -i ~/.ssh/your-key ansible@host74.nird.club
    cd /opt/prod/countrypuff/src
    git checkout <previous-commit>
-   systemctl restart countrypuff-prod
+   sudo systemctl restart countrypuff-prod
    ```
 
 ### Service Recovery

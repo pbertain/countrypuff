@@ -42,7 +42,7 @@ jobs:
 
     - name: Test SSH connection
       run: |
-        ssh -i ~/.ssh/id_ed25519 -o ConnectTimeout=10 root@host74.nird.club "echo 'SSH connection successful'"
+        ssh -i ~/.ssh/id_ed25519 -o ConnectTimeout=10 ansible@host74.nird.club "echo 'SSH connection successful'"
 
     - name: Run Ansible deployment
       run: |
@@ -87,4 +87,4 @@ jobs:
         echo "❌ Production deployment failed!"
         echo "Check the logs above for details."
         echo "You can also check the service status with:"
-        echo "ssh -i ~/.ssh/id_ed25519 root@host74.nird.club 'systemctl status countrypuff-prod'"
+        echo "ssh -i ~/.ssh/id_ed25519 ansible@host74.nird.club 'systemctl status countrypuff-prod'"
