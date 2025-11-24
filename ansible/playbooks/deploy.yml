@@ -13,6 +13,25 @@
       - curl
       - htop
     
+    # Default variables (will be overridden by group_vars if found)
+    app_directory: "/opt/{{ 'dev' if 'development' in group_names else 'prod' }}/countrypuff"
+    app_user: "countrypuff-{{ 'dev' if 'development' in group_names else 'prod' }}"
+    app_group: "countrypuff-{{ 'dev' if 'development' in group_names else 'prod' }}"
+    frontend_port: "{{ 63081 if 'development' in group_names else 63080 }}"
+    backend_port: "{{ 63181 if 'development' in group_names else 63180 }}"
+    service_name: "countrypuff-{{ 'dev' if 'development' in group_names else 'prod' }}"
+    git_branch: "{{ 'dev' if 'development' in group_names else 'main' }}"
+    log_level: "{{ 'DEBUG' if 'development' in group_names else 'INFO' }}"
+    deployment_environment: "{{ 'development' if 'development' in group_names else 'production' }}"
+    
+    # Derived variables
+    venv_path: "{{ app_directory }}/venv"
+    python_executable: "{{ venv_path }}/bin/python"
+    pip_executable: "{{ venv_path }}/bin/pip"
+    systemd_service_file: "/etc/systemd/system/{{ service_name }}.service"
+    log_directory: "/var/log/{{ service_name }}"
+    project_repo: "https://github.com/pbertain/countrypuff.git"
+    
   tasks:
     - name: Update package cache
       apt:
