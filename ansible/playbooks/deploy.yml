@@ -82,6 +82,9 @@
         version: "{{ git_branch }}"
         force: yes
       become_user: "{{ app_user }}"
+      become_method: sudo
+      vars:
+        ansible_ssh_pipelining: true
       notify: restart application
 
     - name: Create Python virtual environment
@@ -89,6 +92,9 @@
       args:
         creates: "{{ venv_path }}/bin/activate"
       become_user: "{{ app_user }}"
+      become_method: sudo
+      vars:
+        ansible_ssh_pipelining: true
 
     - name: Upgrade pip in virtual environment
       pip:
@@ -96,12 +102,18 @@
         state: latest
         virtualenv: "{{ venv_path }}"
       become_user: "{{ app_user }}"
+      become_method: sudo
+      vars:
+        ansible_ssh_pipelining: true
 
     - name: Install Python dependencies
       pip:
         requirements: "{{ app_directory }}/src/requirements.txt"
         virtualenv: "{{ venv_path }}"
       become_user: "{{ app_user }}"
+      become_method: sudo
+      vars:
+        ansible_ssh_pipelining: true
       notify: restart application
 
     - name: Create systemd service file
