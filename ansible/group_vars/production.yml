@@ -1,0 +1,34 @@
+---
+# Production environment configuration
+deployment_environment: production
+git_branch: main
+
+# Deployment paths
+app_directory: /opt/prod/countrypuff
+app_user: countrypuff-prod
+app_group: countrypuff-prod
+
+# Service configuration
+frontend_port: 63080
+backend_port: 63180
+service_name: countrypuff-prod
+
+# Python environment
+venv_path: "{{ app_directory }}/venv"
+python_executable: "{{ venv_path }}/bin/python"
+pip_executable: "{{ venv_path }}/bin/pip"
+
+# Systemd service configuration
+systemd_service_file: /etc/systemd/system/{{ service_name }}.service
+
+# Nginx configuration
+nginx_site_name: countrypuff-prod
+nginx_config_file: /etc/nginx/sites-available/{{ nginx_site_name }}
+nginx_enabled_file: /etc/nginx/sites-enabled/{{ nginx_site_name }}
+
+# SSL/TLS (if needed)
+use_ssl: false
+
+# Logging
+log_directory: /var/log/{{ service_name }}
+log_level: INFO

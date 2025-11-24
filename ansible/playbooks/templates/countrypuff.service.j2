@@ -1,0 +1,34 @@
+[Unit]
+Description=CountryPuff Web Application ({{ deployment_environment }})
+After=network.target
+
+[Service]
+Type=simple
+User={{ app_user }}
+Group={{ app_group }}
+WorkingDirectory={{ app_directory }}/src
+Environment=PATH={{ venv_path }}/bin
+Environment=PYTHONPATH={{ app_directory }}/src
+Environment=FLASK_ENV={{ deployment_environment }}
+Environment=LOG_LEVEL={{ log_level }}
+Environment=PORT={{ frontend_port }}
+ExecStart={{ python_executable }} app.py
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=on-failure
+RestartSec=10
+
+# Logging
+StandardOutput=append:{{ log_directory }}/{{ service_name }}.log
+StandardError=append:{{ log_directory }}/{{ service_name }}.error.log
+
+# Security settings
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths={{ app_directory }} {{ log_directory }}
+
+[Install]
+WantedBy=multi-user.target

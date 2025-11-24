@@ -395,11 +395,20 @@ def internal_error(error):
     }), 500
 
 if __name__ == '__main__':
-    port = 8000
+    import os
+    
+    # Get port from environment variable or use default
+    port = int(os.environ.get('PORT', 8000))
+    
+    # Get environment mode
+    flask_env = os.environ.get('FLASK_ENV', 'development')
+    debug_mode = flask_env == 'development'
+    
     print("🌍 Starting CountryPuff Web Server...")
+    print(f"📍 Environment: {flask_env}")
     print(f"📍 Main page: http://localhost:{port}")
     print(f"🔗 API docs: http://localhost:{port}/docs")
     print(f"📋 cURL examples: http://localhost:{port}/curl")
     print(f"🔍 API endpoint: http://localhost:{port}/api")
     
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=debug_mode, host='0.0.0.0', port=port)
