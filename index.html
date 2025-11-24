@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CountryPuff - CIA World Factbook Data</title>
+    <style>
+        :root {
+            --primary-blue: #0080FF;
+            --primary-green: #00CC00;
+            --light-blue: #66B3FF;
+            --light-green: #66FF66;
+            --dark-blue: #0066CC;
+            --dark-green: #009900;
+            --text-white: #FFFFFF;
+            --text-dark: #333333;
+            --border-gray: #CCCCCC;
+            --background-light: #F8F9FA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--light-blue) 0%, var(--light-green) 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        .header {
+            background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-green) 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+
+        .logo-text {
+            color: var(--text-white);
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .navigation {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-white);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--text-white);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-white);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            background: var(--text-white);
+            border-radius: 50px;
+            padding: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            background: var(--background-light);
+        }
+
+        .search-button {
+            background: linear-gradient(45deg, var(--primary-blue), var(--primary-green));
+            color: var(--text-white);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-suggestions {
+            background: var(--text-white);
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-gray);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .suggestion-item:hover {
+            background: var(--background-light);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .country-result {
+            background: var(--text-white);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .country-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-gray);
+        }
+
+        .country-flag {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .country-name {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .country-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-section {
+            background: var(--background-light);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-green);
+        }
+
+        .info-section h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .info-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: var(--dark-blue);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--primary-blue);
+            font-size: 1.1rem;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .navigation {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .search-container {
+                flex-direction: column;
+                padding: 1.5rem;
+            }
+
+            .country-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .country-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-section">
+            <img src="static/img/logo/countrypuff-logo.png" alt="CountryPuff Logo" class="logo">
+            <div class="logo-text">CountryPuff</div>
+        </div>
+        <nav class="navigation">
+            <a href="https://github.com/pbertain/countrypuff" class="nav-link" target="_blank">GitHub</a>
+            <a href="/redoc" class="nav-link">Try It Out</a>
+            <a href="/docs" class="nav-link">Docs</a>
+            <a href="/api" class="nav-link">API</a>
+            <a href="/curl" class="nav-link">Curl</a>
+        </nav>
+    </header>
+
+    <main class="main-container">
+        <section class="hero-section">
+            <h1 class="hero-title">Explore the World</h1>
+            <p class="hero-subtitle">Search for any country to discover comprehensive data from the CIA World Factbook</p>
+            
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="Search for a country (e.g., United States, Germany, Nigeria...)"
+                    id="countrySearch"
+                    autocomplete="off"
+                >
+                <button class="search-button" onclick="searchCountry()">Search</button>
+            </div>
+            
+            <div class="search-suggestions" id="suggestions"></div>
+        </section>
+
+        <section class="country-result" id="countryResult">
+            <div class="loading" id="loading">Loading country data...</div>
+        </section>
+    </main>
+
+    <script>
+        // Country data and search functionality
+        let countries = [];
+        let searchTimeout;
+        let isSearching = false;
+        let searchInputInitialized = false;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCountryList();
+            setupSearchInput();
+        });
+
+        // Load the list of available countries from API
+        async function loadCountryList() {
+            try {
+                const response = await fetch('/api/countries');
+                const data = await response.json();
+                
+                if (data.success) {
+                    countries = data.countries.map(country => ({
+                        name: country.name,
+                        iso: country.iso_code,
+                        gec: country.gec_code
+                    }));
+                } else {
+                    console.error('Error loading countries:', data.error);
+                    // Fallback to basic list if API fails
+                    countries = [
+                        { name: 'United States', iso: 'US', gec: 'us' },
+                        { name: 'Germany', iso: 'DE', gec: 'gm' },
+                        { name: 'Nigeria', iso: 'NG', gec: 'ni' },
+                        { name: 'Japan', iso: 'JP', gec: 'ja' },
+                        { name: 'Brazil', iso: 'BR', gec: 'br' }
+                    ];
+                }
+            } catch (error) {
+                console.error('Error loading country list:', error);
+                // Fallback to basic list if API fails
+                countries = [
+                    { name: 'United States', iso: 'US', gec: 'us' },
+                    { name: 'Germany', iso: 'DE', gec: 'gm' },
+                    { name: 'Nigeria', iso: 'NG', gec: 'ni' },
+                    { name: 'Japan', iso: 'JP', gec: 'ja' },
+                    { name: 'Brazil', iso: 'BR', gec: 'br' }
+                ];
+            }
+        }
+
+        // Setup search input with real-time suggestions
+        function setupSearchInput() {
+            if (searchInputInitialized) return; // Prevent duplicate initialization
+            
+            const searchInput = document.getElementById('countrySearch');
+            
+            // Input event for suggestions
+            searchInput.addEventListener('input', function(e) {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    showSuggestions(e.target.value);
+                }, 300);
+            });
+
+            // Enter key event
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !isSearching) {
+                    e.preventDefault();
+                    searchCountry();
+                }
+            });
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-container') && !e.target.closest('.search-suggestions')) {
+                    hideSuggestions();
+                }
+            });
+
+            searchInputInitialized = true;
+        }
+
+        // Show search suggestions
+        function showSuggestions(query) {
+            const suggestionsDiv = document.getElementById('suggestions');
+            
+            if (!query || query.length < 2) {
+                hideSuggestions();
+                return;
+            }
+
+            const matches = countries.filter(country =>
+                country.name.toLowerCase().includes(query.toLowerCase()) ||
+                country.iso.toLowerCase().includes(query.toLowerCase()) ||
+                country.gec.toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 8);
+
+            if (matches.length === 0) {
+                hideSuggestions();
+                return;
+            }
+
+            suggestionsDiv.innerHTML = matches.map(country =>
+                `<div class="suggestion-item" onclick="selectCountry('${country.name}')">
+                    <strong>${country.name}</strong>
+                    <span style="color: #666; font-size: 0.9em;">(${country.iso})</span>
+                </div>`
+            ).join('');
+
+            suggestionsDiv.style.display = 'block';
+        }
+
+        // Hide suggestions
+        function hideSuggestions() {
+            document.getElementById('suggestions').style.display = 'none';
+        }
+
+        // Select a country from suggestions
+        function selectCountry(countryName) {
+            document.getElementById('countrySearch').value = countryName;
+            hideSuggestions();
+            searchCountry();
+        }
+
+        // Main search function
+        async function searchCountry() {
+            if (isSearching) return; // Prevent multiple simultaneous searches
+            
+            const query = document.getElementById('countrySearch').value.trim();
+            const resultDiv = document.getElementById('countryResult');
+
+            if (!query) {
+                alert('Please enter a country name');
+                return;
+            }
+
+            isSearching = true;
+            hideSuggestions(); // Hide suggestions during search
+
+            // Show loading state
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="loading">Loading country data...</div>';
+
+            try {
+                // Find the country in our list or search by name
+                let country = countries.find(c =>
+                    c.name.toLowerCase() === query.toLowerCase() ||
+                    c.iso.toLowerCase() === query.toLowerCase() ||
+                    c.gec.toLowerCase() === query.toLowerCase()
+                );
+
+                // If not found in our list, try to search by partial name match
+                if (!country) {
+                    const partialMatches = countries.filter(c =>
+                        c.name.toLowerCase().includes(query.toLowerCase())
+                    );
+                    if (partialMatches.length === 1) {
+                        country = partialMatches[0];
+                    } else if (partialMatches.length > 1) {
+                        throw new Error(`Multiple countries found for "${query}". Please be more specific.`);
+                    }
+                }
+
+                if (!country) {
+                    // Try to search directly by the query (could be a country name not in our list)
+                    country = { name: query, iso: query, gec: query };
+                }
+
+                // Fetch real country data from API
+                const countryData = await fetchCountryData(country);
+                displayCountryData(countryData);
+
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}. Please try again or check the country name.</div>`;
+            } finally {
+                isSearching = false; // Reset search state
+            }
+        }
+
+        // Fetch country data from API
+        async function fetchCountryData(country) {
+            try {
+                const response = await fetch(`/api/countries/${country.iso || country.name}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const countryData = data.country;
+                    return {
+                        name: countryData.name || country.name,
+                        iso: countryData.iso_code || country.iso,
+                        gec: countryData.gec_code || country.gec,
+                        flag: countryData.flag_url || `https://flagcdn.com/w320/${(countryData.iso_code || country.iso).toLowerCase()}.png`,
+                        capital: countryData.capital || 'N/A',
+                        population: countryData.population || 'N/A',
+                        area: countryData.area_total || 'N/A',
+                        government: countryData.government_type || 'N/A',
+                        currency: countryData.currency || 'N/A',
+                        gdp: countryData.gdp_per_capita || 'N/A',
+                        location: countryData.location || 'N/A',
+                        climate: countryData.climate || 'N/A',
+                        languages: countryData.languages || 'N/A',
+                        religions: countryData.religions || 'N/A',
+                        exports: countryData.exports || 'N/A',
+                        imports: countryData.imports || 'N/A',
+                        natural_resources: countryData.natural_resources || 'N/A',
+                        ethnic_groups: countryData.ethnic_groups || 'N/A',
+                        life_expectancy: countryData.life_expectancy || 'N/A'
+                    };
+                } else {
+                    throw new Error(data.error || 'Failed to fetch country data');
+                }
+            } catch (error) {
+                console.error('Error fetching country data:', error);
+                throw error;
+            }
+        }
+
+        // Display country data
+        function displayCountryData(data) {
+            const resultDiv = document.getElementById('countryResult');
+            
+            resultDiv.innerHTML = `
+                <div class="country-header">
+                    <img src="${data.flag}" alt="${data.name} flag" class="country-flag" onerror="this.style.display='none'">
+                    <div>
+                        <div class="country-name">${data.name}</div>
+                        <div style="color: #666; font-size: 1rem;">ISO: ${data.iso} | GEC: ${data.gec}</div>
+                    </div>
+                </div>
+                
+                <div class="country-info">
+                    <div class="info-section">
+                        <h3>Basic Information</h3>
+                        <div class="info-item"><span class="info-label">Capital:</span> ${data.capital}</div>
+                        <div class="info-item"><span class="info-label">Population:</span> ${data.population}</div>
+                        <div class="info-item"><span class="info-label">Area:</span> ${data.area}</div>
+                        <div class="info-item"><span class="info-label">Government:</span> ${data.government}</div>
+                        <div class="info-item"><span class="info-label">Life Expectancy:</span> ${data.life_expectancy}</div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>Economy</h3>
+                        <div class="info-item"><span class="info-label">Currency:</span> ${data.currency}</div>
+                        <div class="info-item"><span class="info-label">GDP per Capita:</span> ${data.gdp}</div>
+                        <div class="info-item"><span class="info-label">Exports:</span> ${data.exports}</div>
+                        <div class="info-item"><span class="info-label">Imports:</span> ${data.imports}</div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>Geography</h3>
+                        <div class="info-item"><span class="info-label">Location:</span> ${data.location}</div>
+                        <div class="info-item"><span class="info-label">Climate:</span> ${data.climate}</div>
+                        <div class="info-item"><span class="info-label">Natural Resources:</span> ${data.natural_resources}</div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>Demographics & Culture</h3>
+                        <div class="info-item"><span class="info-label">Languages:</span> ${data.languages}</div>
+                        <div class="info-item"><span class="info-label">Religions:</span> ${data.religions}</div>
+                        <div class="info-item"><span class="info-label">Ethnic Groups:</span> ${data.ethnic_groups}</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button onclick="resetSearch()" style="
+                        background: linear-gradient(45deg, var(--primary-blue), var(--primary-green));
+                        color: white;
+                        border: none;
+                        padding: 0.75rem 2rem;
+                        border-radius: 25px;
+                        font-size: 1rem;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        Search Another Country
+                    </button>
+                </div>
+            `;
+        }
+
+        // Reset search function
+        function resetSearch() {
+            // Clear search state
+            isSearching = false;
+            clearTimeout(searchTimeout);
+            
+            // Reset UI elements
+            const searchInput = document.getElementById('countrySearch');
+            const resultDiv = document.getElementById('countryResult');
+            
+            searchInput.value = '';
+            resultDiv.style.display = 'none';
+            hideSuggestions();
+            
+            // Re-focus on search input
+            setTimeout(() => {
+                searchInput.focus();
+            }, 100);
+        }
+
+        // Enhanced suggestion selection
+        function selectCountry(countryName) {
+            if (isSearching) return; // Prevent selection during search
+            
+            const searchInput = document.getElementById('countrySearch');
+            searchInput.value = countryName;
+            hideSuggestions();
+            
+            // Small delay to ensure UI updates
+            setTimeout(() => {
+                searchCountry();
+            }, 100);
+        }
+    </script>
+</body>
+</html>
