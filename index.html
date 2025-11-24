@@ -506,25 +506,66 @@
                 if (data.success) {
                     const countryData = data.country;
                     return {
+                        // Basic Information
                         name: countryData.name || country.name,
+                        official_name: countryData.official_name || 'N/A',
                         iso: countryData.iso_code || country.iso,
                         gec: countryData.gec_code || country.gec,
                         flag: countryData.flag_url || `https://flagcdn.com/w320/${(countryData.iso_code || country.iso).toLowerCase()}.png`,
                         capital: countryData.capital || 'N/A',
                         population: countryData.population || 'N/A',
                         area: countryData.area_total || 'N/A',
+                        coordinates: countryData.coordinates || 'N/A',
+                        
+                        // Government
                         government: countryData.government_type || 'N/A',
+                        independence: countryData.independence_date || 'N/A',
+                        
+                        // Economy
                         currency: countryData.currency || 'N/A',
                         gdp: countryData.gdp_per_capita || 'N/A',
-                        location: countryData.location || 'N/A',
-                        climate: countryData.climate || 'N/A',
-                        languages: countryData.languages || 'N/A',
-                        religions: countryData.religions || 'N/A',
                         exports: countryData.exports || 'N/A',
                         imports: countryData.imports || 'N/A',
+                        unemployment: countryData.unemployment_rate || 'N/A',
+                        economic_overview: countryData.economic_overview || 'N/A',
+                        
+                        // Geography
+                        location: countryData.location || 'N/A',
+                        climate: countryData.climate || 'N/A',
                         natural_resources: countryData.natural_resources || 'N/A',
+                        environment_issues: countryData.environment_issues || 'N/A',
+                        
+                        // Demographics
+                        languages: countryData.languages || 'N/A',
+                        religions: countryData.religions || 'N/A',
                         ethnic_groups: countryData.ethnic_groups || 'N/A',
-                        life_expectancy: countryData.life_expectancy || 'N/A'
+                        life_expectancy: countryData.life_expectancy || 'N/A',
+                        birth_rate: countryData.birth_rate || 'N/A',
+                        death_rate: countryData.death_rate || 'N/A',
+                        literacy_rate: countryData.literacy_rate || 'N/A',
+                        age_structure: countryData.age_structure || null,
+                        
+                        // Communications
+                        internet_users: countryData.internet_users || 'N/A',
+                        mobile_phones: countryData.mobile_phones || 'N/A',
+                        broadband: countryData.broadband_subscriptions || 'N/A',
+                        
+                        // Energy
+                        electricity_access: countryData.electricity_access || 'N/A',
+                        energy_consumption: countryData.energy_consumption_per_capita || 'N/A',
+                        electricity_sources: countryData.electricity_generation_sources || null,
+                        
+                        // Transportation
+                        airports: countryData.airports || 'N/A',
+                        railways: countryData.railways || 'N/A',
+                        ports: countryData.ports || 'N/A',
+                        
+                        // Military
+                        military_expenditure: countryData.military_expenditure || 'N/A',
+                        military_service_age: countryData.military_service_age || 'N/A',
+                        
+                        // Environment
+                        air_pollutants: countryData.air_pollutants || null
                     };
                 } else {
                     throw new Error(data.error || 'Failed to fetch country data');
@@ -539,45 +580,101 @@
         function displayCountryData(data) {
             const resultDiv = document.getElementById('countryResult');
             
+            // Helper function to format complex data
+            function formatComplexData(obj, title) {
+                if (!obj || obj === 'N/A') return '';
+                if (typeof obj === 'string') return `<div class="info-item"><span class="info-label">${title}:</span> ${obj}</div>`;
+                
+                let html = `<div class="info-item"><span class="info-label">${title}:</span><br>`;
+                for (const [key, value] of Object.entries(obj)) {
+                    if (value && value !== 'N/A') {
+                        html += `<div style="margin-left: 1rem; font-size: 0.9em;">• ${key}: ${value}</div>`;
+                    }
+                }
+                html += '</div>';
+                return html;
+            }
+            
             resultDiv.innerHTML = `
                 <div class="country-header">
                     <img src="${data.flag}" alt="${data.name} flag" class="country-flag" onerror="this.style.display='none'">
                     <div>
                         <div class="country-name">${data.name}</div>
-                        <div style="color: #666; font-size: 1rem;">ISO: ${data.iso} | GEC: ${data.gec}</div>
+                        <div style="color: #666; font-size: 1rem;">${data.official_name !== 'N/A' ? data.official_name : ''}</div>
+                        <div style="color: #666; font-size: 0.9rem;">ISO: ${data.iso} | GEC: ${data.gec}</div>
                     </div>
                 </div>
                 
                 <div class="country-info">
                     <div class="info-section">
-                        <h3>Basic Information</h3>
+                        <h3>🏛️ Basic Information</h3>
                         <div class="info-item"><span class="info-label">Capital:</span> ${data.capital}</div>
                         <div class="info-item"><span class="info-label">Population:</span> ${data.population}</div>
                         <div class="info-item"><span class="info-label">Area:</span> ${data.area}</div>
-                        <div class="info-item"><span class="info-label">Government:</span> ${data.government}</div>
-                        <div class="info-item"><span class="info-label">Life Expectancy:</span> ${data.life_expectancy}</div>
+                        <div class="info-item"><span class="info-label">Coordinates:</span> ${data.coordinates}</div>
+                        <div class="info-item"><span class="info-label">Government Type:</span> ${data.government}</div>
+                        ${data.independence !== 'N/A' ? `<div class="info-item"><span class="info-label">Independence:</span> ${data.independence}</div>` : ''}
                     </div>
                     
                     <div class="info-section">
-                        <h3>Economy</h3>
-                        <div class="info-item"><span class="info-label">Currency:</span> ${data.currency}</div>
+                        <h3>💰 Economy</h3>
                         <div class="info-item"><span class="info-label">GDP per Capita:</span> ${data.gdp}</div>
+                        <div class="info-item"><span class="info-label">Currency:</span> ${data.currency}</div>
+                        <div class="info-item"><span class="info-label">Unemployment Rate:</span> ${data.unemployment}</div>
                         <div class="info-item"><span class="info-label">Exports:</span> ${data.exports}</div>
                         <div class="info-item"><span class="info-label">Imports:</span> ${data.imports}</div>
+                        ${data.economic_overview !== 'N/A' ? `<div class="info-item"><span class="info-label">Economic Overview:</span> <div style="margin-top: 0.5rem; font-size: 0.9em; line-height: 1.4;">${data.economic_overview.replace(/<[^>]*>/g, '')}</div></div>` : ''}
                     </div>
                     
                     <div class="info-section">
-                        <h3>Geography</h3>
+                        <h3>🌍 Geography & Environment</h3>
                         <div class="info-item"><span class="info-label">Location:</span> ${data.location}</div>
                         <div class="info-item"><span class="info-label">Climate:</span> ${data.climate}</div>
                         <div class="info-item"><span class="info-label">Natural Resources:</span> ${data.natural_resources}</div>
+                        ${data.environment_issues !== 'N/A' ? `<div class="info-item"><span class="info-label">Environmental Issues:</span> ${data.environment_issues}</div>` : ''}
                     </div>
                     
                     <div class="info-section">
-                        <h3>Demographics & Culture</h3>
+                        <h3>👥 Demographics</h3>
+                        <div class="info-item"><span class="info-label">Life Expectancy:</span> ${data.life_expectancy}</div>
+                        ${data.birth_rate !== 'N/A' ? `<div class="info-item"><span class="info-label">Birth Rate:</span> ${data.birth_rate}</div>` : ''}
+                        ${data.death_rate !== 'N/A' ? `<div class="info-item"><span class="info-label">Death Rate:</span> ${data.death_rate}</div>` : ''}
+                        ${data.literacy_rate !== 'N/A' ? `<div class="info-item"><span class="info-label">Literacy Rate:</span> ${data.literacy_rate}</div>` : ''}
+                        ${formatComplexData(data.age_structure, 'Age Structure')}
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>🗣️ Culture & Society</h3>
                         <div class="info-item"><span class="info-label">Languages:</span> ${data.languages}</div>
                         <div class="info-item"><span class="info-label">Religions:</span> ${data.religions}</div>
                         <div class="info-item"><span class="info-label">Ethnic Groups:</span> ${data.ethnic_groups}</div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>📡 Communications</h3>
+                        ${data.internet_users !== 'N/A' ? `<div class="info-item"><span class="info-label">Internet Users:</span> ${data.internet_users}</div>` : ''}
+                        <div class="info-item"><span class="info-label">Mobile Phones:</span> ${data.mobile_phones}</div>
+                        <div class="info-item"><span class="info-label">Broadband Subscriptions:</span> ${data.broadband}</div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>⚡ Energy</h3>
+                        <div class="info-item"><span class="info-label">Electricity Access:</span> ${data.electricity_access}</div>
+                        ${data.energy_consumption !== 'N/A' ? `<div class="info-item"><span class="info-label">Energy Consumption per Capita:</span> ${data.energy_consumption}</div>` : ''}
+                        ${formatComplexData(data.electricity_sources, 'Electricity Generation Sources')}
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>🚗 Transportation</h3>
+                        ${data.airports !== 'N/A' ? `<div class="info-item"><span class="info-label">Airports:</span> ${data.airports}</div>` : ''}
+                        <div class="info-item"><span class="info-label">Railways:</span> ${data.railways}</div>
+                        ${data.ports !== 'N/A' ? `<div class="info-item"><span class="info-label">Major Ports:</span> ${data.ports}</div>` : ''}
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>🛡️ Military & Security</h3>
+                        ${data.military_expenditure !== 'N/A' ? `<div class="info-item"><span class="info-label">Military Expenditure:</span> ${data.military_expenditure}</div>` : ''}
+                        <div class="info-item"><span class="info-label">Military Service Age:</span> ${data.military_service_age}</div>
                     </div>
                 </div>
                 

@@ -169,6 +169,114 @@ class CountryData:
         return self._get_nested_value(['Economy', 'Imports', 'Imports 2024', 'text']) or \
                self._get_nested_value(['Economy', 'Imports', 'Imports 2023', 'text'])
     
+    # Communications Properties
+    @property
+    def internet_users(self) -> Optional[str]:
+        """Get the country's internet users statistics."""
+        return self._get_nested_value(['Communications', 'Internet users', 'total', 'text'])
+    
+    @property
+    def mobile_phones(self) -> Optional[str]:
+        """Get the country's mobile phone subscriptions."""
+        return self._get_nested_value(['Communications', 'Telephones - mobile cellular', 'total subscriptions', 'text'])
+    
+    @property
+    def broadband_subscriptions(self) -> Optional[str]:
+        """Get the country's broadband subscriptions."""
+        return self._get_nested_value(['Communications', 'Broadband - fixed subscriptions', 'total', 'text'])
+    
+    # Energy Properties
+    @property
+    def electricity_access(self) -> Optional[str]:
+        """Get the country's electricity access percentage."""
+        return self._get_nested_value(['Energy', 'Electricity access', 'electrification - total population', 'text'])
+    
+    @property
+    def energy_consumption_per_capita(self) -> Optional[str]:
+        """Get the country's energy consumption per capita."""
+        return self._get_nested_value(['Energy', 'Energy consumption per capita', 'Energy consumption per capita 2024', 'text']) or \
+               self._get_nested_value(['Energy', 'Energy consumption per capita', 'Energy consumption per capita 2023', 'text'])
+    
+    @property
+    def electricity_generation_sources(self) -> Optional[Dict]:
+        """Get the country's electricity generation sources breakdown."""
+        sources = self._get_nested_value(['Energy', 'Electricity generation sources'])
+        if isinstance(sources, dict):
+            return {k: v.get('text') if isinstance(v, dict) else v for k, v in sources.items()}
+        return None
+    
+    # Transportation Properties
+    @property
+    def airports(self) -> Optional[str]:
+        """Get the country's number of airports."""
+        return self._get_nested_value(['Transportation', 'Airports', 'total', 'text'])
+    
+    @property
+    def railways(self) -> Optional[str]:
+        """Get the country's railway length."""
+        return self._get_nested_value(['Transportation', 'Railways', 'total', 'text'])
+    
+    @property
+    def ports(self) -> Optional[str]:
+        """Get the country's major ports."""
+        return self._get_nested_value(['Transportation', 'Ports', 'text'])
+    
+    # Environment Properties
+    @property
+    def environment_issues(self) -> Optional[str]:
+        """Get the country's environmental issues."""
+        return self._get_nested_value(['Environment', 'Environment - current issues', 'text'])
+    
+    @property
+    def air_pollutants(self) -> Optional[Dict]:
+        """Get the country's air pollutant data."""
+        pollutants = self._get_nested_value(['Environment', 'Air pollutants'])
+        if isinstance(pollutants, dict):
+            return {k: v.get('text') if isinstance(v, dict) else v for k, v in pollutants.items()}
+        return None
+    
+    # Military Properties
+    @property
+    def military_expenditure(self) -> Optional[str]:
+        """Get the country's military expenditure."""
+        return self._get_nested_value(['Military and Security', 'Military expenditures', 'Military expenditures 2024', 'text']) or \
+               self._get_nested_value(['Military and Security', 'Military expenditures', 'Military expenditures 2023', 'text'])
+    
+    @property
+    def military_service_age(self) -> Optional[str]:
+        """Get the country's military service age."""
+        return self._get_nested_value(['Military and Security', 'Military service age and obligation', 'text'])
+    
+    # Additional Demographics
+    @property
+    def age_structure(self) -> Optional[Dict]:
+        """Get the country's age structure breakdown."""
+        age_data = self._get_nested_value(['People and Society', 'Age structure'])
+        if isinstance(age_data, dict):
+            return {k: v.get('text') if isinstance(v, dict) else v for k, v in age_data.items()}
+        return None
+    
+    @property
+    def birth_rate(self) -> Optional[str]:
+        """Get the country's birth rate."""
+        return self._get_nested_value(['People and Society', 'Birth rate', 'births/1,000 population', 'text'])
+    
+    @property
+    def death_rate(self) -> Optional[str]:
+        """Get the country's death rate."""
+        return self._get_nested_value(['People and Society', 'Death rate', 'deaths/1,000 population', 'text'])
+    
+    @property
+    def literacy_rate(self) -> Optional[str]:
+        """Get the country's literacy rate."""
+        return self._get_nested_value(['People and Society', 'Literacy', 'total population', 'text'])
+    
+    @property
+    def unemployment_rate(self) -> Optional[str]:
+        """Get the country's unemployment rate."""
+        return self._get_nested_value(['Economy', 'Unemployment rate', 'Unemployment rate 2024', 'text']) or \
+               self._get_nested_value(['Economy', 'Unemployment rate', 'Unemployment rate 2023', 'text'])
+    
     # Utility Methods
     def get_section(self, section_name: str) -> Optional[Dict]:
         """

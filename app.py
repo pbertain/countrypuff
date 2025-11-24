@@ -102,6 +102,7 @@ def get_country(country_identifier):
         
         # Extract comprehensive data
         country_data = {
+            # Basic Information
             'name': country.name,
             'official_name': country.official_name,
             'capital': country.capital,
@@ -111,17 +112,51 @@ def get_country(country_identifier):
             'coordinates': country.coordinates,
             'climate': country.climate,
             'natural_resources': country.natural_resources,
+            
+            # Government
             'government_type': country.government_type,
             'independence_date': country.independence_date,
+            
+            # Economy
             'currency': country.currency,
             'gdp_per_capita': country.gdp_per_capita,
             'exports': country.exports,
             'imports': country.imports,
             'economic_overview': country.economic_overview,
+            'unemployment_rate': country.unemployment_rate,
+            
+            # Demographics
             'ethnic_groups': country.ethnic_groups,
             'languages': country.languages,
             'religions': country.religions,
-            'life_expectancy': country.life_expectancy
+            'life_expectancy': country.life_expectancy,
+            'age_structure': country.age_structure,
+            'birth_rate': country.birth_rate,
+            'death_rate': country.death_rate,
+            'literacy_rate': country.literacy_rate,
+            
+            # Communications
+            'internet_users': country.internet_users,
+            'mobile_phones': country.mobile_phones,
+            'broadband_subscriptions': country.broadband_subscriptions,
+            
+            # Energy
+            'electricity_access': country.electricity_access,
+            'energy_consumption_per_capita': country.energy_consumption_per_capita,
+            'electricity_generation_sources': country.electricity_generation_sources,
+            
+            # Transportation
+            'airports': country.airports,
+            'railways': country.railways,
+            'ports': country.ports,
+            
+            # Environment
+            'environment_issues': country.environment_issues,
+            'air_pollutants': country.air_pollutants,
+            
+            # Military
+            'military_expenditure': country.military_expenditure,
+            'military_service_age': country.military_service_age
         }
         
         # Extract the proper ISO code from the CIA Factbook data itself
