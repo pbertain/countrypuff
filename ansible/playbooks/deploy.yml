@@ -103,6 +103,7 @@
         name: pip
         state: latest
         virtualenv: "{{ venv_path }}"
+        extra_args: "--trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org"
       become_user: "{{ app_user }}"
       become_method: sudo
       vars:
@@ -112,6 +113,7 @@
       pip:
         requirements: "{{ app_directory }}/src/requirements.txt"
         virtualenv: "{{ venv_path }}"
+        extra_args: "--trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org"
       become_user: "{{ app_user }}"
       become_method: sudo
       vars:
