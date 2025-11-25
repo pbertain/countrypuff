@@ -143,7 +143,7 @@
     # Nginx configuration deployment
     - name: Deploy nginx site configuration
       copy:
-        src: "{{ playbook_dir }}/../../conf/nginx-{{ 'dev' if 'development' in group_names else 'prod' }}/sites-available/63-countrypuff-{{ 'dev' if 'development' in group_names else 'prod' }}-nginx.conf"
+        src: "conf/nginx-{{ 'dev' if 'development' in group_names else 'prod' }}/sites-available/63-countrypuff-{{ 'dev' if 'development' in group_names else 'prod' }}-nginx.conf"
         dest: "/etc/nginx/sites-available/63-countrypuff-{{ 'dev' if 'development' in group_names else 'prod' }}-nginx.conf"
         owner: root
         group: root

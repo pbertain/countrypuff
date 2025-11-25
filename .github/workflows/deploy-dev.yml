@@ -45,6 +45,7 @@ jobs:
 
     - name: Run Ansible deployment
       run: |
+        cd /home/runner/work/countrypuff/countrypuff
         ansible-playbook \
           -i ansible/inventories/hosts.yml \
           -l development \
