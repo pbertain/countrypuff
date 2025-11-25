@@ -165,10 +165,10 @@
       register: nginx_test
       failed_when: nginx_test.rc != 0
 
-    - name: Reload nginx
+    - name: Restart nginx
       systemd:
         name: nginx
-        state: reloaded
+        state: restarted
       become: true
       when: nginx_test.rc == 0
 
