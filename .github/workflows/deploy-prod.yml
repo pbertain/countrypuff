@@ -35,14 +35,14 @@ jobs:
 
     - name: Setup SSH key
       run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
-        chmod 600 ~/.ssh/id_ed25519
+        mkdir -p ~/.ssh/keys
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/keys/nirdclub__id_ed25519
+        chmod 600 ~/.ssh/keys/nirdclub__id_ed25519
         ssh-keyscan -H host74.nird.club >> ~/.ssh/known_hosts
 
     - name: Test SSH connection
       run: |
-        ssh -i ~/.ssh/id_ed25519 -o ConnectTimeout=10 ansible@host74.nird.club "echo 'SSH connection successful'"
+        ssh -i ~/.ssh/keys/nirdclub__id_ed25519 -o ConnectTimeout=10 ansible@host74.nird.club "echo 'SSH connection successful'"
 
     - name: Run Ansible deployment
       run: |
@@ -50,7 +50,7 @@ jobs:
           -i ansible/inventories/hosts.yml \
           -l production \
           ansible/playbooks/deploy.yml \
-          --private-key ~/.ssh/id_ed25519 \
+          --private-key ~/.ssh/keys/nirdclub__id_ed25519 \
           --diff \
           -v
       env:
@@ -86,4 +86,4 @@ jobs:
         echo "❌ Production deployment failed!"
         echo "Check the logs above for details."
         echo "You can also check the service status with:"
-        echo "ssh -i ~/.ssh/id_ed25519 ansible@host74.nird.club 'systemctl status countrypuff-prod'"
+        echo "ssh -i ~/.ssh/keys/nirdclub__id_ed25519 ansible@host74.nird.club 'systemctl status countrypuff-prod'"

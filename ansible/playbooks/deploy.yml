@@ -140,6 +140,38 @@
         enabled: yes
         daemon_reload: yes
 
+    # Nginx configuration deployment
+    - name: Deploy nginx site configuration
+      copy:
+        src: "{{ playbook_dir }}/../../conf/nginx-{{ 'dev' if 'development' in group_names else 'prod' }}/sites-available/63-countrypuff-{{ 'dev' if 'development' in group_names else 'prod' }}-nginx.conf"
+        dest: "/etc/nginx/sites-available/63-countrypuff-{{ 'dev' if 'development' in group_names else 'prod' }}-nginx.conf"
+        owner: root
+        group: root
+        mode: '0644'
+      become: true
+
+    - name: Enable nginx site by creating symlink
+      file:
+        src: "/etc/nginx/sites-available/63-countrypuff-{{ 'dev' if 'development' in group_names else 'prod' }}-nginx.conf"
+        dest: "/etc/nginx/sites-enabled/63-countrypuff-{{ 'dev' if 'development' in group_names else 'prod' }}-nginx.conf"
+        state: link
+        owner: root
+        group: root
+      become: true
+
+    - name: Test nginx configuration
+      command: nginx -t
+      become: true
+      register: nginx_test
+      failed_when: nginx_test.rc != 0
+
+    - name: Reload nginx
+      systemd:
+        name: nginx
+        state: reloaded
+      become: true
+      when: nginx_test.rc == 0
+
   handlers:
     - name: reload systemd
       systemd:
